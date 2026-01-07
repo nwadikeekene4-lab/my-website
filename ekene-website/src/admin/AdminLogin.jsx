@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import API from '../api'; // Replaced standard axios with your custom API instance
+import API from '../api'; 
 import './AdminLogin.css';
 
 export function AdminLogin() {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // New Loading State
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -13,20 +13,28 @@ export function AdminLogin() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Start loading
-    setError(""); // Clear previous errors
+    setIsLoading(true);
+    setError("");
 
     try {
-      // Changed from axios.post("http://localhost:5000/admin/login"...) 
-      // to API.post("/admin/login"...)
+      // Sending request to your Render backend via api.js
       const response = await API.post("/admin/login", credentials);
+      
       if (response.data.success) {
         localStorage.setItem("isAdminAuthenticated", "true");
         window.location.href = "/admin";
       }
     } catch (err) {
-      setError("Incorrect Username or Password");
-      setIsLoading(false); // Stop loading if it fails
+      console.error("Login Error:", err);
+      
+      // If there's no response, it's a network/URL error (like the localhost issue)
+      if (!err.response) {
+        setError("Network Error: Site is still looking for 'localhost' instead of Render.");
+      } else {
+        setError("Incorrect Username or Password");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -39,6 +47,7 @@ export function AdminLogin() {
             type="text" 
             name="username" 
             placeholder="Username" 
+            value={credentials.username}
             onChange={handleChange} 
             disabled={isLoading}
             required 
@@ -48,20 +57,21 @@ export function AdminLogin() {
             type="password" 
             name="password" 
             placeholder="Password" 
+            value={credentials.password}
             onChange={handleChange} 
             disabled={isLoading}
             required 
             className="admin-input" 
           />
           
-          {error && <p className="error-message">{error}</p>}
+          {error && <p className="error-message" style={{color: 'red'}}>{error}</p>}
           
           <button 
             type="submit" 
             className={`admin-login-button ${isLoading ? 'loading' : ''}`}
             disabled={isLoading}
           >
-            {isLoading ? <div className="spinner"></div> : "Login"}
+            {isLoading ? "Checking..." : "Login"}
           </button>
         </form>
       </div>
