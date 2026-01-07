@@ -17,7 +17,7 @@ export function AdminLogin() {
     setError("");
 
     try {
-      // Sending request to your Render backend via api.js
+      // This sends { username: "admin", password: "password123" } to the backend
       const response = await API.post("/admin/login", credentials);
       
       if (response.data.success) {
@@ -25,13 +25,18 @@ export function AdminLogin() {
         window.location.href = "/admin";
       }
     } catch (err) {
-      console.error("Login Error:", err);
+      console.error("Login failed. Details:", err);
       
-      // If there's no response, it's a network/URL error (like the localhost issue)
+      // If there is no response from the server at all (Localhost error)
       if (!err.response) {
-        setError("Network Error: Site is still looking for 'localhost' instead of Render.");
-      } else {
+        setError("Network Error: Site is still looking for 'localhost'. Did you push your api.js changes?");
+      } 
+      // If the server responded with 401 (Wrong password)
+      else if (err.response.status === 401) {
         setError("Incorrect Username or Password");
+      } 
+      else {
+        setError("An unexpected error occurred. Please check the console.");
       }
     } finally {
       setIsLoading(false);
@@ -64,14 +69,14 @@ export function AdminLogin() {
             className="admin-input" 
           />
           
-          {error && <p className="error-message" style={{color: 'red'}}>{error}</p>}
+          {error && <p className="error-message" style={{color: 'red', fontSize: '0.9rem'}}>{error}</p>}
           
           <button 
             type="submit" 
             className={`admin-login-button ${isLoading ? 'loading' : ''}`}
             disabled={isLoading}
           >
-            {isLoading ? "Checking..." : "Login"}
+            {isLoading ? "Authenticating..." : "Login"}
           </button>
         </form>
       </div>
