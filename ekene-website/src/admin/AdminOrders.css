@@ -1,0 +1,294 @@
+/* Container */
+.admin-orders-page {
+  background-color: #f8fafc;
+  min-height: 100vh;
+  padding: 30px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Page Title Styled like Admin Products Header */
+.page-title {
+  background-color: #f1f5f9;
+  color: #1e293b;
+  padding: 24px 30px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  border-left: 6px solid #3b82f6;
+  border-top: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+/* Order Card Wrapper */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.order-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* Header of each Order Card */
+.order-header {
+  background: #f8fafc;
+  padding: 15px 25px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.order-ref {
+  font-weight: 700;
+  color: #475569;
+  font-family: monospace;
+  font-size: 1rem;
+}
+
+.order-amount {
+  color: #059669; /* Professional Green */
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+/* Content Layout (Shipping vs Items) */
+.order-content {
+  display: flex;
+  padding: 25px;
+  gap: 30px;
+}
+
+.info-section {
+  flex: 1;
+}
+
+.info-section h4 {
+  margin-bottom: 15px;
+  color: #1e293b;
+  border-bottom: 2px solid #3b82f6;
+  display: inline-block;
+  padding-bottom: 4px;
+  font-size: 1rem;
+}
+
+.shipping-info p {
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+/* Modern Copy Button */
+.copy-btn {
+  background-color: #f1f5f9;
+  color: #3b82f6;
+  border: 1px solid #cbd5e1;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: all 0.2s;
+}
+
+.copy-btn:hover {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+/* Items Grid */
+.items-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  background: #fdfdfd;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+}
+
+.item-thumb {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.item-name {
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+  color: #1e293b;
+}
+
+.item-meta {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+
+@media (max-width: 900px) {
+  .order-content {
+    flex-direction: column; /* Stacks Shipping and Items vertically */
+    gap: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-orders-page {
+    padding: 15px;
+  }
+
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .order-amount {
+    width: 100%;
+    text-align: left;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 10px;
+  }
+
+  .page-title {
+    font-size: 1.4rem;
+    padding: 20px;
+  }
+}
+
+/* Header Left container to align Ref and Status */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+/* ✅ Status Dropdown Styling */
+.status-select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid #cbd5e1;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+}
+
+/* Status-specific colors */
+.status-select.pending { background-color: #fef3c7; color: #92400e; }
+.status-select.processing { background-color: #e0f2fe; color: #075985; }
+.status-select.shipped { background-color: #f3e8ff; color: #6b21a8; }
+.status-select.delivered { background-color: #dcfce7; color: #166534; }
+.status-select.cancelled { background-color: #fee2e2; color: #991b1b; }
+
+/* ✅ Improved Copy Button Animation */
+.copy-btn.copy-success {
+  background-color: #059669 !important;
+  color: white !important;
+  border-color: #059669 !important;
+}
+
+/* Ensure the layout stacks correctly on small screens */
+@media (max-width: 600px) {
+  .header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .status-select {
+    width: 100%;
+  }
+}
+
+/* Container for the bottom button */
+.bottom-actions {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+  border-top: 2px dashed #e2e8f0;
+  margin-top: 20px;
+}
+
+/* Red Clear Button Styling */
+.clear-all-btn {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.clear-all-btn:hover {
+  background-color: #dc2626;
+  color: white;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+}
+
+/* No orders placeholder */
+.no-orders {
+  text-align: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 12px;
+  color: #94a3b8;
+  border: 2px dashed #e2e8f0;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Card Footer for Single Delete */
+.order-footer {
+  padding: 12px 25px;
+  background-color: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.single-delete-btn {
+  background: none;
+  border: none;
+  color: #94a3b8; /* Subtle gray initially */
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.single-delete-btn:hover {
+  background-color: #fee2e2;
+  color: #dc2626; /* Turns red on hover */
+}
