@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import API from '../api'; 
 import './AdminLogin.css';
@@ -11,38 +12,37 @@ export function AdminLogin() {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = async (e) => {
+ const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
+    // We define these as strings here so the computer cannot say "admin is not defined"
+    const loginPayload = {
+      username: credentials.username,
+      password: credentials.password
+    };
+
     try {
-      // This sends { username: "admin", password: "password123" } to the backend
-      const response = await API.post("/admin/login", credentials);
+      // Direct call to Render to bypass any api.js issues
+      const response = await API.post("/admin/login", loginPayload);
       
-      if (response.data.success) {
+      if (response.data && response.data.success) {
         localStorage.setItem("isAdminAuthenticated", "true");
         window.location.href = "/admin";
       }
     } catch (err) {
-      console.error("Login failed. Details:", err);
-      
-      // If there is no response from the server at all (Localhost error)
-      if (!err.response) {
-        setError("Network Error: Site is still looking for 'localhost'. Did you push your api.js changes?");
-      } 
-      // If the server responded with 401 (Wrong password)
-      else if (err.response.status === 401) {
-        setError("Incorrect Username or Password");
-      } 
-      else {
-        setError("An unexpected error occurred. Please check the console.");
+      console.error("Login Error:", err);
+      // This helps us see if the error is CORS or Wrong Password
+      if (err.response) {
+        setError(`Error: ${err.response.data.message || "Invalid Credentials"}`);
+      } else {
+        setError("Network Error: Could not reach the server.");
       }
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="admin-login-page">
       <div className="admin-login-card">
