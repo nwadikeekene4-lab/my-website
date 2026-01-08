@@ -1,5 +1,5 @@
-import axios from 'axios';
 import React, { useState } from 'react';
+import axios from 'axios'; // Used for type checking/error handling
 import API from '../api'; 
 import './AdminLogin.css';
 
@@ -12,37 +12,45 @@ export function AdminLogin() {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
- const handleLogin = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
-    // We define these as strings here so the computer cannot say "admin is not defined"
+    // Using explicit strings to avoid any "admin is not defined" variable errors
     const loginPayload = {
       username: credentials.username,
       password: credentials.password
     };
 
     try {
-      // Direct call to Render to bypass any api.js issues
+      // This uses the baseURL from your api.js (https://ekene-backend-shop.onrender.com)
       const response = await API.post("/admin/login", loginPayload);
       
       if (response.data && response.data.success) {
         localStorage.setItem("isAdminAuthenticated", "true");
+        // Redirect to admin dashboard on success
         window.location.href = "/admin";
       }
     } catch (err) {
-      console.error("Login Error:", err);
-      // This helps us see if the error is CORS or Wrong Password
+      console.error("Login Error Details:", err);
+      
+      // If the server responded with an error (like 401 Unauthorized)
       if (err.response) {
-        setError(`Error: ${err.response.data.message || "Invalid Credentials"}`);
-      } else {
-        setError("Network Error: Could not reach the server.");
+        setError(`Error: ${err.response.data.message || "Invalid Admin Credentials"}`);
+      } 
+      // If the request was made but no response was received (CORS or Network issue)
+      else if (err.request) {
+        setError("Network Error: Cannot reach the backend. Please check the console.");
+      } 
+      else {
+        setError("An unexpected error occurred.");
       }
     } finally {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="admin-login-page">
       <div className="admin-login-card">
@@ -69,7 +77,11 @@ export function AdminLogin() {
             className="admin-input" 
           />
           
-          {error && <p className="error-message" style={{color: 'red', fontSize: '0.9rem'}}>{error}</p>}
+          {error && (
+            <p className="error-message" style={{ color: 'red', fontSize: '0.85rem', marginTop: '10px' }}>
+              {error}
+            </p>
+          )}
           
           <button 
             type="submit" 
