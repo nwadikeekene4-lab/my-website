@@ -1,20 +1,16 @@
 import axios from 'axios';
 
+// We hardcode this to ensure NO environmental variables can mess it up
+const RENDER_URL = 'https://ekene-backend-shop.onrender.com';
+
+console.log("🚀 API LOADING: Connecting to ->", RENDER_URL);
+
 const API = axios.create({
-  baseURL: 'https://ekene-backend-shop.onrender.com', 
+  baseURL: RENDER_URL,
   withCredentials: true,
   headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
+    'Content-Type': 'application/json'
   }
-});
-
-// This interceptor will let us know EXACTLY where the browser is trying to go
-API.interceptors.request.use((config) => {
-  console.log("📡 CALLING BACKEND AT:", config.baseURL + config.url);
-  return config;
-}, (error) => {
-  return Promise.reject(error);
 });
 
 export default API;
