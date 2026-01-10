@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import API from "../api"; // Swapped axios for your dynamic API instance
+import API from "../api"; 
 import './AdminProducts.css';
 
 export default function AdminProducts() {
@@ -20,7 +20,6 @@ export default function AdminProducts() {
 
   const fetchProducts = async () => {
     try {
-      // Changed from axios.get("http://localhost:5000/products")
       const res = await API.get("/products");
       setProducts(res.data);
     } catch (err) {
@@ -29,21 +28,20 @@ export default function AdminProducts() {
   };
 
   /**
-   * DIRECT MAPPER: Logic used for inventory grid display
+   * Helper to resolve the correct image URL
    */
- const getImageUrl = (imagePath) => {
-  if (!imagePath || imagePath === "null" || typeof imagePath !== 'string') {
-    return "https://placehold.co/100x100?text=No+Image";
-  }
+  const getImageUrl = (imagePath) => {
+    if (!imagePath || imagePath === "null" || typeof imagePath !== 'string') {
+      return "https://placehold.co/100x100?text=No+Image";
+    }
 
-  // 1. If it's a full URL (new way), use it as is
-  if (imagePath.startsWith('http')) return imagePath;
-  
-  // 2. If it's a partial path (old way), extract filename and build the link
-  // We use f_auto (format) and q_auto (quality) for better loading
-  const fileName = imagePath.split('/').pop();
-  return `https://res.cloudinary.com/dw4jcixiu/image/upload/f_auto,q_auto/v1/shop_products/${fileName}`;
-};
+    // 1. If it's a full Cloudinary URL starting with http, use it directly
+    if (imagePath.startsWith('http')) return imagePath;
+    
+    // 2. Fallback for older partial paths
+    const fileName = imagePath.split('/').pop();
+    return `https://res.cloudinary.com/dw4jcixiu/image/upload/f_auto,q_auto/v1/shop_products/${fileName}`;
+  };
 
   const addProduct = async (e) => {
     e.preventDefault();
@@ -53,18 +51,22 @@ export default function AdminProducts() {
     const formData = new FormData();
     formData.append("name", newName);
     formData.append("price", newPrice);
-    formData.append("image", newImageFile);
+    formData.append("image", newImageFile); // Must match upload.single("image") in backend
 
     try {
-      // Changed from axios.post("http://localhost:5000/admin/products"...)
-      await API.post("/admin/products", formData);
+      // Added headers to ensure multipart/form-data is recognized
+      await API.post("/admin/products", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      
       setNewName("");
       setNewPrice("");
       setNewImageFile(null);
       e.target.reset(); 
       await fetchProducts();
     } catch (err) {
-      alert("Error adding product.");
+      console.error("Upload error:", err);
+      alert("Error adding product. Check backend logs.");
     } finally {
       setIsSaving(false);
     }
@@ -73,7 +75,6 @@ export default function AdminProducts() {
   const deleteProduct = async (id) => {
     if (!window.confirm("Are you sure?")) return;
     try {
-      // Changed from axios.delete("http://localhost:5000/admin/products/..."...)
       await API.delete(`/admin/products/${id}`);
       fetchProducts();
     } catch (err) {
@@ -89,8 +90,9 @@ export default function AdminProducts() {
     if (editImageFile) formData.append("image", editImageFile);
 
     try {
-      // Changed from axios.put("http://localhost:5000/admin/products/..."...)
-      await API.put(`/admin/products/${id}`, formData);
+      await API.put(`/admin/products/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
       setEditingId(null);
       setEditImageFile(null); 
       await fetchProducts();
@@ -146,7 +148,7 @@ export default function AdminProducts() {
                   </div>
                   <div className="info">
                     <p className="p-name">{p.name}</p>
-                    <p className="p-price">₦{Number(p.price).toLocaleString()}</p>
+                    <p className="p-price">₦{Number(p.price || 0).toLocaleString()}</p>
                   </div>
                   <div className="actions">
                     <button className="edit-link" onClick={() => { 
