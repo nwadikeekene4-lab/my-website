@@ -13,7 +13,7 @@ export function HomePage({ cart, setCart }) {
   const [addedItemId, setAddedItemId] = useState(null);
 
   useEffect(() => {
-    // Points to https://ekene-backend-shop.onrender.com/products
+    // Points to live backend /products
     API.get('/products')
       .then((response) => {
         setProducts(response.data);
@@ -29,9 +29,9 @@ export function HomePage({ cart, setCart }) {
   };
 
   const handleAddToCart = (product) => {
+    if (!product || !product.id) return;
     const quantity = quantities[product.id] || 1;
 
-    // Points to live backend /cart/add
     API.post('/cart/add', {
       productId: product.id,
       quantity: quantity,
@@ -42,11 +42,7 @@ export function HomePage({ cart, setCart }) {
     })
     .then((response) => {
       setCart(response.data); 
-      
-      // Show the "Added" message for this specific ID
       setAddedItemId(product.id);
-      
-      // Hide it after 2 seconds
       setTimeout(() => {
         setAddedItemId(null);
       }, 2000);
@@ -60,7 +56,7 @@ export function HomePage({ cart, setCart }) {
     setSearchText(value);
     const normalizedSearch = normalizeText(value);
     const foundProduct = products.find((product) => {
-      const normalizedProductName = normalizeText(product.name);
+      const normalizedProductName = normalizeText(product.name || "");
       return normalizedProductName.includes(normalizedSearch);
     });
 
@@ -74,7 +70,7 @@ export function HomePage({ cart, setCart }) {
   };
 
   const normalizeText = (text) => {
-    return text 
+    return (text || "")
       .toLowerCase()
       .replace(/[\s-_]/g, '');
   };
@@ -85,7 +81,19 @@ export function HomePage({ cart, setCart }) {
 
       <div className="home-page">
         <div className="products-grid">
-          {products.map((product) => {
+          {products && products.map((product) => {
+            // SAFE IMAGE LOGIC:
+            let displayImage = `https://placehold.co/300x300?text=${product.name || 'Product'}`;
+            
+            if (product.image && typeof product.image === 'string' && product.image !== "null") {
+              if (product.image.startsWith('http')) {
+                displayImage = product.image;
+              } else {
+                const fileName = product.image.split('/').pop();
+                displayImage = `https://res.cloudinary.com/dw4jcixiu/image/upload/f_auto,q_auto/shop_products/${fileName}`;
+              }
+            }
+
             return (
               <div
                 key={product.id}
@@ -95,17 +103,11 @@ export function HomePage({ cart, setCart }) {
                 }`}
               >
                 <div className="product-image-container">
-  <img 
-  className="product-image" 
-  src={
-    product.image && typeof product.image === 'string' 
-      ? (product.image.startsWith('http') 
-          ? product.image // Use full Cloudinary URL
-          : `https://res.cloudinary.com/dw4jcixiu/image/upload/shop_products/${product.image.split('/').pop()}`) // Fix partial path
-      : `https://placehold.co/300x300?text=${product.name}` // Fallback for no image
-  } 
-  alt={product.name} 
-/>
+                  <img 
+                    className="product-image" 
+                    src={displayImage} 
+                    alt={product.name} 
+                  />
                 </div>
 
                 <div className="product-name">{product.name}</div>
@@ -122,7 +124,7 @@ export function HomePage({ cart, setCart }) {
                 </div>
 
                 <div className="product-price">
-                  ₦{product.price}
+                  ₦{Number(product.price || 0).toLocaleString()}
                 </div>
 
                 <div className="product-quantity-container" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
@@ -149,7 +151,10 @@ export function HomePage({ cart, setCart }) {
 
                 <button
                   className="add-to-cart-button"
-                  onClick={() => handleAddToCart(product)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleAddToCart(product);
+                  }}
                 >
                   Add to cart
                 </button>
