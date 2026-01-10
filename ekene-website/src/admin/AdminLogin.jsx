@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios'; // Used for type checking/error handling
 import API from '../api'; 
 import './AdminLogin.css';
 
@@ -17,34 +16,22 @@ export function AdminLogin() {
     setIsLoading(true);
     setError("");
 
-    // Using explicit strings to avoid any "admin is not defined" variable errors
-    const loginPayload = {
-      username: credentials.username,
-      password: credentials.password
-    };
-
     try {
-      // This uses the baseURL from your api.js (https://ekene-backend-shop.onrender.com)
-      const response = await API.post("/admin/login", loginPayload);
+      const response = await API.post("/admin/login", {
+        username: credentials.username,
+        password: credentials.password
+      });
       
       if (response.data && response.data.success) {
         localStorage.setItem("isAdminAuthenticated", "true");
-        // Redirect to admin dashboard on success
         window.location.href = "/admin";
       }
     } catch (err) {
-      console.error("Login Error Details:", err);
-      
-      // If the server responded with an error (like 401 Unauthorized)
+      console.error("Login Error:", err);
       if (err.response) {
         setError(`Error: ${err.response.data.message || "Invalid Admin Credentials"}`);
-      } 
-      // If the request was made but no response was received (CORS or Network issue)
-      else if (err.request) {
-        setError("Network Error: Cannot reach the backend. Please check the console.");
-      } 
-      else {
-        setError("An unexpected error occurred.");
+      } else {
+        setError("Network Error: Backend unreachable. Check Console (F12).");
       }
     } finally {
       setIsLoading(false);
@@ -76,19 +63,9 @@ export function AdminLogin() {
             required 
             className="admin-input" 
           />
-          
-          {error && (
-            <p className="error-message" style={{ color: 'red', fontSize: '0.85rem', marginTop: '10px' }}>
-              {error}
-            </p>
-          )}
-          
-          <button 
-            type="submit" 
-            className={`admin-login-button ${isLoading ? 'loading' : ''}`}
-            disabled={isLoading}
-          >
-            {isLoading ? "Authenticating..." : "Login"}
+          {error && <p className="error-message" style={{ color: 'red' }}>{error}</p>}
+          <button type="submit" className="admin-login-button" disabled={isLoading}>
+            {isLoading ? "Checking..." : "Login"}
           </button>
         </form>
       </div>
