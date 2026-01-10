@@ -96,10 +96,12 @@ export function HomePage({ cart, setCart }) {
               >
                 <div className="product-image-container">
                   <img 
-                    className="product-image" 
-                    src={product.image.startsWith('http') ? product.image : `/${product.image}`} 
-                    alt={product.name} 
-                  />
+  className="product-image" 
+  src={product.image && typeof product.image === 'string' && product.image.startsWith('http') 
+    ? product.image 
+    : `https://placehold.co/300x300?text=${product.name}`} 
+  alt={product.name} 
+/>
                 </div>
 
                 <div className="product-name">{product.name}</div>
