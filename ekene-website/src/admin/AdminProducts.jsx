@@ -31,16 +31,18 @@ export default function AdminProducts() {
   /**
    * DIRECT MAPPER: Logic used for inventory grid display
    */
-  const getImageUrl = (imagePath) => {
+ const getImageUrl = (imagePath) => {
   if (!imagePath || imagePath === "null" || typeof imagePath !== 'string') {
     return "https://placehold.co/100x100?text=No+Image";
   }
-  // If it's already a full URL (from Cloudinary), just use it
+
+  // 1. If it's a full URL (new way), use it as is
   if (imagePath.startsWith('http')) return imagePath;
   
-  // Fallback for older local images
+  // 2. If it's a partial path (old way), extract filename and build the link
+  // We use f_auto (format) and q_auto (quality) for better loading
   const fileName = imagePath.split('/').pop();
-  return `https://res.cloudinary.com/dw4jcixiu/image/upload/shop_products/${fileName}`;
+  return `https://res.cloudinary.com/dw4jcixiu/image/upload/f_auto,q_auto/v1/shop_products/${fileName}`;
 };
 
   const addProduct = async (e) => {

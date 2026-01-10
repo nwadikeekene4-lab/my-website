@@ -95,11 +95,15 @@ export function HomePage({ cart, setCart }) {
                 }`}
               >
                 <div className="product-image-container">
-                  <img 
+  <img 
   className="product-image" 
-  src={product.image && typeof product.image === 'string' && product.image.startsWith('http') 
-    ? product.image 
-    : `https://placehold.co/300x300?text=${product.name}`} 
+  src={
+    product.image && typeof product.image === 'string' 
+      ? (product.image.startsWith('http') 
+          ? product.image // Use full Cloudinary URL
+          : `https://res.cloudinary.com/dw4jcixiu/image/upload/shop_products/${product.image.split('/').pop()}`) // Fix partial path
+      : `https://placehold.co/300x300?text=${product.name}` // Fallback for no image
+  } 
   alt={product.name} 
 />
                 </div>
