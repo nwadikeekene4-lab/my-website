@@ -48,7 +48,7 @@ export function OrderPage () {
             return (
               <div key={order.id} className="order-wrapper">
                 <div className="Order-header">
-                  <div className="order-placed"><strong>Placed: {new Date(order.createdAt).toDateString()}</strong></div>
+                  <div className="order-placed"><strong>Orders Placed: {new Date(order.createdAt).toDateString()}</strong></div>
                   <div className="total"><strong>Total: ₦{order.amount}</strong></div>
                   <div className="order-id"><strong>ID: {order.reference}</strong></div>
                 </div>
